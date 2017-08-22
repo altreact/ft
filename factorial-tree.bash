@@ -2,8 +2,6 @@
 
 nHeights=([1]=16 [2]=8 [3]=4 [4]=2 [5]=1);
 vSpaces=([1]=1 [2]=3 [3]=5 [4]=7 [5]=9 [6]=11 [7]=13 [8]=15 [9]=17 [10]=19 [11]=21 [12]=23 [13]=25 [14]=27 [15]=29 [16]=31);
-segment=()
-branchLine=()
 
 printFractal() {
 
@@ -16,77 +14,71 @@ printFractal() {
 printForN() {
 
   printBranches $1
-  #printLine "1"
+  printTrunks $1 "1"
 }
 
 fillInWhiteSpace() {
 
-  y=$2
+  whiteSpace=""
+  space="0"
+
   for ((num=$1; $num > 0; num--))
   do
-    segment+=('0');
+    whiteSpace="$whiteSpace$space"
   done 
-}
-
-printLine() {
-
-  for i in $1
-  do
-    if [[ $i == 0 ]];
-    then
-      printf ' ';
-    else
-      printf '1';
-    fi
-  done
-
-  printf "\n";
-  segment=()
+  
+  echo "$whiteSpace"
 }
 
 prepareLine() {
 
-  for i in ${branchLine[@]}
-  do
-    length=${#i}
-    allWhiteSpace=$((100 - $length))
+  line=""
+  length=${#1}
+  allWhiteSpace=$((100 - $length))
 
-    endingWhiteSpace=$(($allWhiteSpace / 2))
-    beginningWhiteSpace=$(($endingWhiteSpace + 1))
-    
-    fillInWhiteSpace $beginningWhiteSpace
-    segment+=($i})
-    fillInWhiteSpace $endingWhiteSpace
+  endingWhiteSpace=$(($allWhiteSpace / 2))
+  beginningWhiteSpace=$(($endingWhiteSpace + 1))
+  
+  bLine="$(fillInWhiteSpace $beginningWhiteSpace)"
+  eline="$(fillInWhiteSpace $endingWhiteSpace)"
+  line="$bLine$1$eLine"
 
-    printLine ${segment[@]}
-    printf "$i"
-  done
+  echo $line | sed "s/0/ /g";
 }
 
 branchLineInnerWhitespace() {
 
+  b=""
+  space="0"
+
   for ((j=$1; $j > 0; j--))
   do
-    branchLine+=(0);
+    b="$b$space";
   done
+
+  echo "$b"
 }
 
 printBranches() {
 
-  branchLine=()
+  branchline=""
+  one="1"
 
   for ((x=$1; $x > 0; x--))
   do
 
-    branchLine+=(1)
-    branchLineInnerWhitespace ${vSpaces[$x]}
-    branchLine+=(1)
+    b="$(branchLineInnerWhitespace ${vSpaces[$x]})"
+    branchLine="$one$b$one"
+    
+    prepareLine $branchLine
+  done
+}
 
-    #prepareLine 
+printTrunks() {
 
-    printf "${branchLine}"
-
-    branchLine=()
+  for ((z=$1; $z > 0; z--))
+  do
+    prepareLine $2
   done
 }
 
